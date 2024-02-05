@@ -16,7 +16,7 @@ import (
 func installPackage(ctx context.Context, client *http.Client, version string, maxSize int64) error {
 	// Sanitize user input
 	if _, err := semver.NewVersion(version); err != nil {
-		return fmt.Errorf("%w: %v", ErrInvalidVersion, version)
+		return fmt.Errorf("%w: %v", ErrInvalidTofuVersion, version)
 	}
 
 	err := downloadPackage(

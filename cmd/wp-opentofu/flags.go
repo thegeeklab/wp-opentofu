@@ -58,10 +58,10 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:        "version",
+			Name:        "tofu-version",
 			Usage:       "tofu version to use",
-			EnvVars:     []string{"PLUGIN_VERSION"},
-			Destination: &settings.Version,
+			EnvVars:     []string{"PLUGIN_TOFU_VERSION"},
+			Destination: &settings.TofuVersion,
 			Category:    category,
 		},
 		&cli.BoolFlag{

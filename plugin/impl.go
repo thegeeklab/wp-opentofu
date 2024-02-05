@@ -11,10 +11,10 @@ import (
 )
 
 var (
-	ErrTaintedPath      = errors.New("filepath is tainted")
-	ErrMaxSizeSizeLimit = errors.New("max size limit of decoded data exceeded")
-	ErrActionUnknown    = errors.New("action not found")
-	ErrInvalidVersion   = errors.New("invalid version string")
+	ErrTaintedPath        = errors.New("filepath is tainted")
+	ErrMaxSizeSizeLimit   = errors.New("max size limit of decoded data exceeded")
+	ErrActionUnknown      = errors.New("action not found")
+	ErrInvalidTofuVersion = errors.New("invalid version string")
 )
 
 const (
@@ -47,8 +47,8 @@ func (p *Plugin) Validate() error {
 		p.Settings.OutFile = fmt.Sprintf("%s.plan.tfout", p.Settings.DataDir)
 	}
 
-	if p.Settings.Version != "" {
-		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.Version, maxDecompressionSize)
+	if p.Settings.TofuVersion != "" {
+		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
 		if err != nil {
 			return err
 		}

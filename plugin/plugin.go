@@ -15,7 +15,7 @@ type Plugin struct {
 type Settings struct {
 	Action cli.StringSlice
 
-	Version     string
+	TofuVersion string
 	InitOptions InitOptions
 	FmtOptions  FmtOptions
 
