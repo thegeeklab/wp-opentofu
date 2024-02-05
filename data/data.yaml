@@ -1,211 +1,59 @@
 ---
 properties:
-  - name: become
+  - name: action
     description: |
-      Enable privilege escalation.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: become_method
-    description: |
-      Privilege escalation method to use.
-    type: string
-    required: false
-
-  - name: become_user
-    description: |
-      Privilege escalation user to use.
-    type: string
-    required: false
-
-  - name: check
-    description: |
-      Run a check, do not apply any changes.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: connection
-    description: |
-      Connection type to use.
-    type: string
-    required: false
-
-  - name: diff
-    description: |
-      Show the differences. Be careful when using it in public CI environments as it can print secrets.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: extra_vars
-    description: |
-      Set additional variables as `key=value`.
+      Tofu actions to execute.
     type: list
+    defaultValue: "validate,plan,apply"
     required: false
 
-  - name: flush_cache
+  - name: fmt_options
     description: |
-      Clear the fact cache for every host in inventory.
+      Options for the fmt command, see the OpenTofu [fmt command](https://opentofu.org/docs/cli/commands/fmt/) documentation.
+    type: string
+    required: false
+
+  - name: init_options
+    description: |
+      Tofu init command options, see the OpenTofu [init command](https://opentofu.org/docs/cli/commands/init/) documentation.
+    type: string
+    required: false
+
+  - name: no_log
+    description: |
+      Suppress tofu command output.
     type: bool
     defaultValue: false
     required: false
 
-  - name: force_handlers
+  - name: parallelism
     description: |
-      Run handlers even if a task fails.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: forks
-    description: |
-      Specify number of parallel processes to use.
-    type: integer
-    defaultValue: 5
-    required: false
-
-  - name: galaxy_requirements
-    description: |
-      Path to galaxy requirements file.
-    type: string
-    required: false
-
-  - name: inventory
-    description: |
-      Path to inventory file.
-    type: list
-    required: false
-
-  - name: limit
-    description: |
-      Limit selected hosts to an additional pattern.
-    type: string
-    required: false
-
-  - name: list_hosts
-    description: |
-      Outputs a list of matching hosts.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: list_tags
-    description: |
-      List all available tags.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: list_tasks
-    description: |
-      List all tasks that would be executed.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: module_path
-    description: |
-      Prepend paths to module library.
-    type: list
-    required: false
-
-  - name: playbook
-    description: |
-      List of playbooks to apply.
-    type: list
-    required: false
-
-  - name: private_key
-    description: |
-      SSH private key used to authenticate the connection.
-    type: string
-    required: false
-
-  - name: python_requirements
-    description: |
-      Path to python requirements file.
-    type: string
-    required: false
-
-  - name: scp_extra_args
-    description: |
-      Specify extra arguments to pass to SCP connections only.
-    type: string
-    required: false
-
-  - name: sftp_extra_args
-    description: |
-      Specify extra arguments to pass to SFTP connections only.
-    type: string
-    required: false
-
-  - name: skip_tags
-    description: |
-      Only run plays and tasks whose tags do not match.
-    type: string
-    required: false
-
-  - name: ssh_common_args
-    description: |
-      Specify common arguments to pass to SFTP, SCP and SSH connections.
-    type: string
-    required: false
-
-  - name: ssh_extra_args
-    description: |
-      Specify extra arguments to pass to SSH connections only.
-    type: string
-    required: false
-
-  - name: start_at_task
-    description: |
-      Start the playbook at the task matching this name.
-    type: string
-    required: false
-
-  - name: syntax_check
-    description: |
-      Perform a syntax check on the playbook.
-    type: bool
-    defaultValue: false
-    required: false
-
-  - name: tags
-    description: |
-      Only run plays and tasks tagged with these values.
-    type: string
-    required: false
-
-  - name: timeout
-    description: |
-      Override the connection timeout in seconds.
+      Number of concurrent operations.
     type: integer
     defaultValue: 0
     required: false
 
-  - name: user
+  - name: refresh
     description: |
-      Connect as this user.
+      Enables refreshing of the state before `plan` and `apply` commands.
+    type: bool
+    defaultValue: true
+    required: false
+
+  - name: root_dir
+    description: |
+      Root directory where the tofu files live.
     type: string
     required: false
 
-  - name: vault_id
+  - name: targets
     description: |
-      The vault identity to use.
-    type: string
+      Targets to run `apply` or `plan` action on.
+    type: list
     required: false
 
-  - name: vault_password
+  - name: tofu_version
     description: |
-      The vault password to use.
+      Tofu version to use.
     type: string
-    required: false
-
-  - name: verbose
-    description: |
-      Level of verbosity, 0 up to 4.
-    type: integer
-    defaultValue: 0
     required: false
