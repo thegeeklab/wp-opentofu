@@ -1,14 +1,31 @@
-module github.com/jmccann/drone-terraform
+module github.com/thegeeklab/wp-opentofu
+
+go 1.21
 
 require (
-	github.com/Sirupsen/logrus v0.0.0-20160829202321-3ec0642a7fb6
-	github.com/aws/aws-sdk-go v0.0.0-20161007224333-c0d7d3282e4c
-	github.com/franela/goblin v0.0.0-20200105215937-c9ffbefa60db
-	github.com/go-ini/ini v1.21.1
-	github.com/jmespath/go-jmespath v0.0.0-20160803190731-bd40a432e4c7
-	github.com/joho/godotenv v1.3.0
-	github.com/urfave/cli v0.0.0-20161006035353-55f715e28c46
-	golang.org/x/sys v0.0.0-20161006025142-8d1157a43547
+	github.com/Masterminds/semver/v3 v3.2.1
+	github.com/thegeeklab/wp-plugin-go v1.5.0
+	github.com/urfave/cli/v2 v2.27.1
+	golang.org/x/sys v0.16.0
 )
 
-go 1.13
+require (
+	github.com/Masterminds/goutils v1.1.1 // indirect
+	github.com/Masterminds/sprig/v3 v3.2.3 // indirect
+	github.com/cpuguy83/go-md2man/v2 v2.0.3 // indirect
+	github.com/google/uuid v1.1.1 // indirect
+	github.com/huandu/xstrings v1.3.3 // indirect
+	github.com/imdario/mergo v0.3.11 // indirect
+	github.com/joho/godotenv v1.5.1 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/mitchellh/copystructure v1.0.0 // indirect
+	github.com/mitchellh/reflectwalk v1.0.0 // indirect
+	github.com/rs/zerolog v1.31.0 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/shopspring/decimal v1.2.0 // indirect
+	github.com/spf13/cast v1.3.1 // indirect
+	github.com/xrash/smetrics v0.0.0-20231213231151-1d8dd44e695e // indirect
+	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
+)

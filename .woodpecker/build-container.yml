@@ -1,0 +1,69 @@
+---
+when:
+  - event: [pull_request, tag]
+  - event: [push, manual]
+    branch:
+      - ${CI_REPO_DEFAULT_BRANCH}
+  - event: [push]
+    branch:
+      - renovate/*
+
+steps:
+  - name: dryrun
+    image: quay.io/thegeeklab/wp-docker-buildx:3
+    settings:
+      containerfile: Containerfile.multiarch
+      dry_run: true
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      provenance: false
+      repo: ${CI_REPO}
+    when:
+      - event: [pull_request]
+
+  - name: publish-dockerhub
+    image: quay.io/thegeeklab/wp-docker-buildx:3
+    group: container
+    settings:
+      auto_tag: true
+      containerfile: Containerfile.multiarch
+      password:
+        from_secret: docker_password
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      provenance: false
+      repo: ${CI_REPO}
+      username:
+        from_secret: docker_username
+    when:
+      - event: [tag]
+      - event: [push, manual]
+        branch:
+          - ${CI_REPO_DEFAULT_BRANCH}
+
+  - name: publish-quay
+    image: quay.io/thegeeklab/wp-docker-buildx:3
+    group: container
+    settings:
+      auto_tag: true
+      containerfile: Containerfile.multiarch
+      password:
+        from_secret: quay_password
+      platforms:
+        - linux/amd64
+        - linux/arm64
+      provenance: false
+      registry: quay.io
+      repo: quay.io/${CI_REPO}
+      username:
+        from_secret: quay_username
+    when:
+      - event: [tag]
+      - event: [push, manual]
+        branch:
+          - ${CI_REPO_DEFAULT_BRANCH}
+
+depends_on:
+  - test

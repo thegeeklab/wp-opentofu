@@ -1,0 +1,37 @@
+FROM --platform=$BUILDPLATFORM docker.io/golang:1.21@sha256:7b575fe0d9c2e01553b04d9de8ffea6d35ca3ab3380d2a8db2acc8f0f1519a53 as build
+
+ARG TARGETOS
+ARG TARGETARCH
+
+ADD . /src
+WORKDIR /src
+
+RUN make build
+
+FROM docker.io/alpine:3.19
+
+LABEL maintainer="Robert Kaussow <mail@thegeeklab.de>"
+LABEL org.opencontainers.image.authors="Robert Kaussow <mail@thegeeklab.de>"
+LABEL org.opencontainers.image.title="wp-opentofu"
+LABEL org.opencontainers.image.url="https://github.com/thegeeklab/wp-opentofu"
+LABEL org.opencontainers.image.source="https://github.com/thegeeklab/wp-opentofu"
+LABEL org.opencontainers.image.documentation="https://github.com/thegeeklab/wp-opentofu"
+
+ARG TARGETOS
+ARG TARGETARCH
+ARG TOFU_VERSION
+
+# renovate: datasource=github-releases depName=opentofu/opentofu
+ENV TOFU_VERSION="${TOFU_VERSION:-v1.6.0}"
+
+RUN apk --update add --virtual .build-deps curl libarchive-tools && \
+    curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_amd64.zip" | \
+        bsdtar -xf - -C /usr/local/bin tofu && \
+    chmod 755 /usr/local/bin/tofu && \
+    apk del .build-deps && \
+    rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/* && \
+    rm -rf /root/.cache/
+
+COPY --from=build /src/dist/wp-opentofu /bin/wp-opentofu
+ENTRYPOINT ["/bin/wp-opentofu"]
