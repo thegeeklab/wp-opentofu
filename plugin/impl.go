@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -98,10 +97,6 @@ func (p *Plugin) Execute() error {
 		}
 
 		cmd.Env = os.Environ()
-
-		if !p.Settings.NoLog {
-			trace.Cmd(cmd)
-		}
 
 		if err := cmd.Run(); err != nil {
 			return err

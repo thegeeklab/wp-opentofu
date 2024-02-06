@@ -45,14 +45,14 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 		},
 		&cli.BoolFlag{
 			Name:        "no-log",
-			Usage:       "suppress tofu command output",
+			Usage:       "suppress tofu command output for `plan`, `apply` and `destroy` action",
 			EnvVars:     []string{"PLUGIN_NO_LOG"},
 			Destination: &settings.NoLog,
 			Category:    category,
 		},
 		&cli.StringSliceFlag{
 			Name:        "targets",
-			Usage:       "targets to run `apply` or `plan` action on",
+			Usage:       "targets to run `plan` or `apply` action on",
 			EnvVars:     []string{"PLUGIN_TARGETS"},
 			Destination: &settings.Targets,
 			Category:    category,
