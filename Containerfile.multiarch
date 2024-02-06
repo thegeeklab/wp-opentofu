@@ -22,7 +22,7 @@ ARG TARGETARCH
 ARG TOFU_VERSION
 
 # renovate: datasource=github-releases depName=opentofu/opentofu
-ENV TOFU_VERSION="${TOFU_VERSION:-v1.6.0}"
+ENV TOFU_VERSION="${TOFU_VERSION:-v1.6.1}"
 
 RUN apk --update add --virtual .build-deps curl libarchive-tools && \
     curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_amd64.zip" | \
