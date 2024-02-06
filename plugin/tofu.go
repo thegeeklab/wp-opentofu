@@ -3,6 +3,7 @@ package plugin
 import (
 	"fmt"
 
+	"github.com/thegeeklab/wp-plugin-go/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -111,10 +112,16 @@ func (p *Plugin) planCommand(destroy bool) *execabs.Cmd {
 		args = append(args, "-refresh=false")
 	}
 
-	return execabs.Command(
+	cmd := execabs.Command(
 		tofuBin,
 		args...,
 	)
+
+	if !p.Settings.NoLog {
+		trace.Cmd(cmd)
+	}
+
+	return cmd
 }
 
 func (p *Plugin) applyCommand() *execabs.Cmd {
@@ -144,10 +151,16 @@ func (p *Plugin) applyCommand() *execabs.Cmd {
 
 	args = append(args, p.Settings.OutFile)
 
-	return execabs.Command(
+	cmd := execabs.Command(
 		tofuBin,
 		args...,
 	)
+
+	if !p.Settings.NoLog {
+		trace.Cmd(cmd)
+	}
+
+	return cmd
 }
 
 func (p *Plugin) destroyCommand() *execabs.Cmd {
@@ -173,8 +186,14 @@ func (p *Plugin) destroyCommand() *execabs.Cmd {
 
 	args = append(args, "-auto-approve")
 
-	return execabs.Command(
+	cmd := execabs.Command(
 		tofuBin,
 		args...,
 	)
+
+	if !p.Settings.NoLog {
+		trace.Cmd(cmd)
+	}
+
+	return cmd
 }

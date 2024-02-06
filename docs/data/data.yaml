@@ -21,7 +21,7 @@ properties:
 
   - name: no_log
     description: |
-      Suppress tofu command output.
+      Suppress tofu command output for `plan`, `apply` and `destroy` action.
     type: bool
     defaultValue: false
     required: false
@@ -48,7 +48,7 @@ properties:
 
   - name: targets
     description: |
-      Targets to run `apply` or `plan` action on.
+      Targets to run `plan` or `apply` action on.
     type: list
     required: false
 
