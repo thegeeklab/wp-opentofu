@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/sys/execabs"
+	"github.com/thegeeklab/wp-plugin-go/trace"
 )
 
 var (
@@ -46,6 +46,11 @@ func (p *Plugin) Validate() error {
 		p.Settings.OutFile = fmt.Sprintf("%s.plan.tfout", p.Settings.DataDir)
 	}
 
+	return nil
+}
+
+// Execute provides the implementation of the plugin.
+func (p *Plugin) Execute() error {
 	if p.Settings.TofuVersion != "" {
 		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
 		if err != nil {
@@ -53,12 +58,7 @@ func (p *Plugin) Validate() error {
 		}
 	}
 
-	return nil
-}
-
-// Execute provides the implementation of the plugin.
-func (p *Plugin) Execute() error {
-	commands := []*execabs.Cmd{
+	commands := []*pluginCommand{
 		p.versionCommand(),
 	}
 
@@ -84,24 +84,25 @@ func (p *Plugin) Execute() error {
 		}
 	}
 
-	if err := deleteCache(p.Settings.DataDir); err != nil {
+	if err := deleteDir(p.Settings.DataDir); err != nil {
 		return err
 	}
 
-	for _, cmd := range commands {
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+	for _, command := range commands {
+		command.cmd.Stdout = os.Stdout
+		command.cmd.Stderr = os.Stderr
+		command.cmd.Env = os.Environ()
 
 		if p.Settings.RootDir != "" {
-			cmd.Dir = p.Settings.RootDir
+			command.cmd.Dir = p.Settings.RootDir
 		}
 
-		cmd.Env = os.Environ()
+		trace.Cmd(command.cmd)
 
-		if err := cmd.Run(); err != nil {
+		if err := command.cmd.Run(); err != nil {
 			return err
 		}
 	}
 
-	return deleteCache(p.Settings.DataDir)
+	return deleteDir(p.Settings.DataDir)
 }

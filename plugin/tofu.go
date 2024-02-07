@@ -3,7 +3,6 @@ package plugin
 import (
 	"fmt"
 
-	"github.com/thegeeklab/wp-plugin-go/trace"
 	"golang.org/x/sys/execabs"
 )
 
@@ -11,18 +10,19 @@ const (
 	tofuBin = "/usr/local/bin/tofu"
 )
 
-func (p *Plugin) versionCommand() *execabs.Cmd {
-	args := []string{
-		"version",
-	}
-
-	return execabs.Command(
-		tofuBin,
-		args...,
-	)
+type pluginCommand struct {
+	cmd     *execabs.Cmd
+	private bool
 }
 
-func (p *Plugin) initCommand() *execabs.Cmd {
+func (p *Plugin) versionCommand() *pluginCommand {
+	return &pluginCommand{
+		execabs.Command(tofuBin, "version"),
+		false,
+	}
+}
+
+func (p *Plugin) initCommand() *pluginCommand {
 	args := []string{
 		"init",
 	}
@@ -34,27 +34,27 @@ func (p *Plugin) initCommand() *execabs.Cmd {
 	// Fail tofu execution on prompt
 	args = append(args, "-input=false")
 
-	return execabs.Command(
-		tofuBin,
-		args...,
-	)
+	return &pluginCommand{
+		execabs.Command(tofuBin, args...),
+		false,
+	}
 }
 
-func (p *Plugin) getModulesCommand() *execabs.Cmd {
-	return execabs.Command(
-		tofuBin,
-		"get",
-	)
+func (p *Plugin) getModulesCommand() *pluginCommand {
+	return &pluginCommand{
+		execabs.Command(tofuBin, "get"),
+		false,
+	}
 }
 
-func (p *Plugin) validateCommand() *execabs.Cmd {
-	return execabs.Command(
-		tofuBin,
-		"validate",
-	)
+func (p *Plugin) validateCommand() *pluginCommand {
+	return &pluginCommand{
+		execabs.Command(tofuBin, "validate"),
+		false,
+	}
 }
 
-func (p *Plugin) fmtCommand() *execabs.Cmd {
+func (p *Plugin) fmtCommand() *pluginCommand {
 	args := []string{
 		"fmt",
 	}
@@ -75,13 +75,13 @@ func (p *Plugin) fmtCommand() *execabs.Cmd {
 		args = append(args, fmt.Sprintf("-check=%t", *p.Settings.FmtOptions.Check))
 	}
 
-	return execabs.Command(
-		tofuBin,
-		args...,
-	)
+	return &pluginCommand{
+		execabs.Command(tofuBin, args...),
+		false,
+	}
 }
 
-func (p *Plugin) planCommand(destroy bool) *execabs.Cmd {
+func (p *Plugin) planCommand(destroy bool) *pluginCommand {
 	args := []string{
 		"plan",
 	}
@@ -112,19 +112,13 @@ func (p *Plugin) planCommand(destroy bool) *execabs.Cmd {
 		args = append(args, "-refresh=false")
 	}
 
-	cmd := execabs.Command(
-		tofuBin,
-		args...,
-	)
-
-	if !p.Settings.NoLog {
-		trace.Cmd(cmd)
+	return &pluginCommand{
+		execabs.Command(tofuBin, args...),
+		p.Settings.NoLog,
 	}
-
-	return cmd
 }
 
-func (p *Plugin) applyCommand() *execabs.Cmd {
+func (p *Plugin) applyCommand() *pluginCommand {
 	args := []string{
 		"apply",
 	}
@@ -151,19 +145,13 @@ func (p *Plugin) applyCommand() *execabs.Cmd {
 
 	args = append(args, p.Settings.OutFile)
 
-	cmd := execabs.Command(
-		tofuBin,
-		args...,
-	)
-
-	if !p.Settings.NoLog {
-		trace.Cmd(cmd)
+	return &pluginCommand{
+		execabs.Command(tofuBin, args...),
+		p.Settings.NoLog,
 	}
-
-	return cmd
 }
 
-func (p *Plugin) destroyCommand() *execabs.Cmd {
+func (p *Plugin) destroyCommand() *pluginCommand {
 	args := []string{
 		"destroy",
 	}
@@ -186,14 +174,8 @@ func (p *Plugin) destroyCommand() *execabs.Cmd {
 
 	args = append(args, "-auto-approve")
 
-	cmd := execabs.Command(
-		tofuBin,
-		args...,
-	)
-
-	if !p.Settings.NoLog {
-		trace.Cmd(cmd)
+	return &pluginCommand{
+		execabs.Command(tofuBin, args...),
+		p.Settings.NoLog,
 	}
-
-	return cmd
 }
