@@ -2,6 +2,7 @@ package plugin
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
@@ -24,12 +25,38 @@ const (
 
 //nolint:revive
 func (p *Plugin) run(ctx context.Context) error {
+	if err := p.FlagsFromContext(); err != nil {
+		return fmt.Errorf("validation failed: %w", err)
+	}
+
 	if err := p.Validate(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
 
 	if err := p.Execute(); err != nil {
 		return fmt.Errorf("execution failed: %w", err)
+	}
+
+	return nil
+}
+
+func (p *Plugin) FlagsFromContext() error {
+	if p.Context.String("init-option") != "" {
+		initOptions := InitOptions{}
+		if err := json.Unmarshal([]byte(p.Context.String("init-option")), &initOptions); err != nil {
+			return fmt.Errorf("cannot unmarshal init_option: %w", err)
+		}
+
+		p.Settings.InitOptions = initOptions
+	}
+
+	if p.Context.String("fmt-option") != "" {
+		fmtOptions := FmtOptions{}
+		if err := json.Unmarshal([]byte(p.Context.String("fmt-option")), &fmtOptions); err != nil {
+			return fmt.Errorf("cannot unmarshal fmt_option: %w", err)
+		}
+
+		p.Settings.FmtOptions = fmtOptions
 	}
 
 	return nil

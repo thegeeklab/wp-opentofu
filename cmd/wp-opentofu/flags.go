@@ -19,15 +19,15 @@ func settingsFlags(settings *plugin.Settings, category string) []cli.Flag {
 			Category:    category,
 		},
 		&cli.StringFlag{
-			Name:     "init-options",
+			Name:     "init-option",
 			Usage:    "tofu init command options, see https://opentofu.org/docs/cli/commands/init/",
-			EnvVars:  []string{"PLUGIN_INIT_OPTIONS"},
+			EnvVars:  []string{"PLUGIN_INIT_OPTION"},
 			Category: category,
 		},
 		&cli.StringFlag{
-			Name:     "fmt-options",
+			Name:     "fmt-option",
 			Usage:    "options for the fmt command, see https://opentofu.org/docs/cli/commands/fmt/",
-			EnvVars:  []string{"PLUGIN_FMT_OPTIONS"},
+			EnvVars:  []string{"PLUGIN_FMT_OPTION"},
 			Category: category,
 		},
 		&cli.IntFlag{
