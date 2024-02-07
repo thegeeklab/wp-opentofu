@@ -142,7 +142,7 @@ func sanitizeArchivePath(d, t string) (string, error) {
 	return "", fmt.Errorf("%w: %v", ErrTaintedPath, t)
 }
 
-func deleteCache(path string) error {
+func deleteDir(path string) error {
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		return nil
 	}
