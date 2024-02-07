@@ -24,7 +24,8 @@ ARG TOFU_VERSION
 # renovate: datasource=github-releases depName=opentofu/opentofu
 ENV TOFU_VERSION="${TOFU_VERSION:-v1.6.1}"
 
-RUN apk --update add --virtual .build-deps curl libarchive-tools && \
+RUN apk --update add --virtual .build-deps libarchive-tools && \
+    apk add --no-cache curl git openssh-client && \
     curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_amd64.zip" | \
         bsdtar -xf - -C /usr/local/bin tofu && \
     chmod 755 /usr/local/bin/tofu && \
