@@ -3,6 +3,7 @@ package plugin
 import (
 	"archive/zip"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -11,29 +12,48 @@ import (
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
+	"github.com/rs/zerolog/log"
 )
 
 func installPackage(ctx context.Context, client *http.Client, version string, maxSize int64) error {
 	// Sanitize user input
-	if _, err := semver.NewVersion(version); err != nil {
+	semverVersion, err := semver.NewVersion(version)
+	if err != nil {
 		return fmt.Errorf("%w: %v", ErrInvalidTofuVersion, version)
 	}
 
-	err := downloadPackage(
-		ctx,
-		client,
-		"/tmp/tofu.zip",
-		fmt.Sprintf(
-			"https://github.com/opentofu/opentofu/releases/download/%s/tofu_%s_linux_amd64.zip",
-			version,
-			strings.TrimPrefix(version, ""),
-		),
+	packageURL := fmt.Sprintf(
+		"https://github.com/opentofu/opentofu/releases/download/v%s/tofu_%s_linux_amd64.zip",
+		semverVersion.String(),
+		semverVersion.String(),
 	)
+
+	tmpdir, err := os.MkdirTemp("/tmp", "tofu_dl_")
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create tmp dir: %w", err)
 	}
 
-	return unzip("/tmp/tofu.zip", "/bin", maxSize)
+	defer os.RemoveAll(tmpdir)
+
+	log.Debug().
+		Str("tmpdir", tmpdir).
+		Msgf("Download OpenTofu '%s' from URL '%s'", version, packageURL)
+
+	tmpfile := filepath.Join(tmpdir, "tofu.zip")
+
+	if err := downloadPackage(ctx, client, tmpfile, packageURL); err != nil {
+		return fmt.Errorf("failed to download: %w", err)
+	}
+
+	if err := unzip(tmpfile, tmpdir, maxSize); err != nil {
+		return fmt.Errorf("failed to unzip: %w", err)
+	}
+
+	if err := os.Rename(filepath.Join(tmpdir, "tofu"), tofuBin); err != nil {
+		return fmt.Errorf("failed to rename: %w", err)
+	}
+
+	return nil
 }
 
 func downloadPackage(ctx context.Context, client *http.Client, filepath, url string) error {
@@ -54,6 +74,11 @@ func downloadPackage(ctx context.Context, client *http.Client, filepath, url str
 	if err != nil {
 		return err
 	}
+
+	if resp.StatusCode > http.StatusBadRequest {
+		return fmt.Errorf("%w: %v", ErrHTTPError, resp.Status)
+	}
+
 	defer resp.Body.Close()
 
 	// Writer the body to file
@@ -113,7 +138,7 @@ func unzip(src, dest string, maxSize int64) error {
 			}()
 
 			written, err := io.CopyN(f, rc, maxSize)
-			if err != nil {
+			if err != nil && !errors.Is(err, io.EOF) {
 				return err
 			} else if written == maxSize {
 				return fmt.Errorf("%w: %d", ErrMaxSizeSizeLimit, maxSize)

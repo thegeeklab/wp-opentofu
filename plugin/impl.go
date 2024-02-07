@@ -14,10 +14,11 @@ var (
 	ErrMaxSizeSizeLimit   = errors.New("max size limit of decoded data exceeded")
 	ErrActionUnknown      = errors.New("action not found")
 	ErrInvalidTofuVersion = errors.New("invalid version string")
+	ErrHTTPError          = errors.New("http error")
 )
 
 const (
-	maxDecompressionSize = 1024
+	maxDecompressionSize = 100 * 1024 * 1024
 	defaultDirPerm       = 0o755
 )
 
