@@ -7,13 +7,13 @@ properties:
     defaultValue: "validate,plan,apply"
     required: false
 
-  - name: fmt_options
+  - name: fmt_option
     description: |
       Options for the fmt command, see the OpenTofu [fmt command](https://opentofu.org/docs/cli/commands/fmt/) documentation.
     type: string
     required: false
 
-  - name: init_options
+  - name: init_option
     description: |
       Tofu init command options, see the OpenTofu [init command](https://opentofu.org/docs/cli/commands/init/) documentation.
     type: string
