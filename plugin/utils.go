@@ -126,6 +126,7 @@ func unzip(src, dest string, maxSize int64) error {
 			_ = os.MkdirAll(path, f.Mode())
 		} else {
 			_ = os.MkdirAll(filepath.Dir(path), f.Mode())
+
 			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
 				return err
