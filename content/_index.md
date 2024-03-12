@@ -55,5 +55,9 @@ docker build --file Containerfile.multiarch --tag thegeeklab/wp-opentofu .
 ## Test
 
 ```Shell
-docker run -it thegeeklab/wp-opentofu --action validate
+docker run --rm \
+  -e PLUGIN_ACTION=validate \
+  -v $(pwd):/build:z \
+  -w /build \
+   thegeeklab/wp-opentofu
 ```
