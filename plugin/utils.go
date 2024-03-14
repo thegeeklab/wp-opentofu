@@ -33,7 +33,9 @@ func installPackage(ctx context.Context, client *http.Client, version string, ma
 		return fmt.Errorf("failed to create tmp dir: %w", err)
 	}
 
-	defer os.RemoveAll(tmpdir)
+	defer func() {
+		_ = deleteDir(tmpdir)
+	}()
 
 	log.Debug().
 		Str("tmpdir", tmpdir).
@@ -169,9 +171,5 @@ func sanitizeArchivePath(d, t string) (string, error) {
 }
 
 func deleteDir(path string) error {
-	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return nil
-	}
-
-	return os.Remove(path)
+	return os.RemoveAll(path)
 }
