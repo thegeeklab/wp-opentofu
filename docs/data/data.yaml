@@ -19,6 +19,20 @@ properties:
     type: string
     required: false
 
+  - name: insecure_skip_verify
+    description: |
+      Skip SSL verification.
+    type: bool
+    defaultValue: false
+    required: false
+
+  - name: log_level
+    description: |
+      Plugin log level.
+    type: string
+    defaultValue: "info"
+    required: false
+
   - name: no_log
     description: |
       Suppress tofu command output for `plan`, `apply` and `destroy` action.

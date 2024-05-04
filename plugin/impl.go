@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/trace"
+	"github.com/thegeeklab/wp-plugin-go/v2/trace"
 )
 
 var (
@@ -79,6 +80,9 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	batchCmd := make([]*Cmd, 0)
+	batchCmd = append(batchCmd, p.versionCommand())
+
 	if p.Settings.TofuVersion != "" {
 		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
 		if err != nil {
@@ -86,27 +90,23 @@ func (p *Plugin) Execute() error {
 		}
 	}
 
-	commands := []*pluginCommand{
-		p.versionCommand(),
-	}
-
-	commands = append(commands, p.initCommand())
-	commands = append(commands, p.getModulesCommand())
+	batchCmd = append(batchCmd, p.initCommand())
+	batchCmd = append(batchCmd, p.getModulesCommand())
 
 	for _, action := range p.Settings.Action.Value() {
 		switch action {
 		case "fmt":
-			commands = append(commands, p.fmtCommand())
+			batchCmd = append(batchCmd, p.fmtCommand())
 		case "validate":
-			commands = append(commands, p.validateCommand())
+			batchCmd = append(batchCmd, p.validateCommand())
 		case "plan":
-			commands = append(commands, p.planCommand(false))
+			batchCmd = append(batchCmd, p.planCommand(false))
 		case "plan-destroy":
-			commands = append(commands, p.planCommand(true))
+			batchCmd = append(batchCmd, p.planCommand(true))
 		case "apply":
-			commands = append(commands, p.applyCommand())
+			batchCmd = append(batchCmd, p.applyCommand())
 		case "destroy":
-			commands = append(commands, p.destroyCommand())
+			batchCmd = append(batchCmd, p.destroyCommand())
 		default:
 			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
 		}
@@ -116,18 +116,22 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	for _, command := range commands {
-		command.cmd.Stdout = os.Stdout
-		command.cmd.Stderr = os.Stderr
-		command.cmd.Env = os.Environ()
+	for _, bc := range batchCmd {
+		bc.cmd.Stdout = os.Stdout
+		bc.cmd.Stderr = os.Stderr
+		trace.Cmd(bc.cmd)
 
-		if p.Settings.RootDir != "" {
-			command.cmd.Dir = p.Settings.RootDir
+		bc.cmd.Env = os.Environ()
+
+		if bc.private {
+			bc.cmd.Stdout = io.Discard
 		}
 
-		trace.Cmd(command.cmd)
+		if p.Settings.RootDir != "" {
+			bc.cmd.Dir = p.Settings.RootDir
+		}
 
-		if err := command.cmd.Run(); err != nil {
+		if err := bc.cmd.Run(); err != nil {
 			return err
 		}
 	}
