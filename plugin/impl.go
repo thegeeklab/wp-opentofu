@@ -117,21 +117,21 @@ func (p *Plugin) Execute() error {
 	}
 
 	for _, bc := range batchCmd {
-		bc.cmd.Stdout = os.Stdout
-		bc.cmd.Stderr = os.Stderr
-		trace.Cmd(bc.cmd)
+		bc.Stdout = os.Stdout
+		bc.Stderr = os.Stderr
+		trace.Cmd(bc.Cmd)
 
-		bc.cmd.Env = os.Environ()
+		bc.Env = os.Environ()
 
-		if bc.private {
-			bc.cmd.Stdout = io.Discard
+		if bc.Private {
+			bc.Stdout = io.Discard
 		}
 
 		if p.Settings.RootDir != "" {
-			bc.cmd.Dir = p.Settings.RootDir
+			bc.Dir = p.Settings.RootDir
 		}
 
-		if err := bc.cmd.Run(); err != nil {
+		if err := bc.Run(); err != nil {
 			return err
 		}
 	}

@@ -49,8 +49,8 @@ type FmtOptions struct {
 }
 
 type Cmd struct {
-	cmd     *execabs.Cmd
-	private bool
+	*execabs.Cmd
+	Private bool
 }
 
 func New(e wp.ExecuteFunc, build ...string) *Plugin {

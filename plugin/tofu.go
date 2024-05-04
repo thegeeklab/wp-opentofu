@@ -12,8 +12,8 @@ const (
 
 func (p *Plugin) versionCommand() *Cmd {
 	return &Cmd{
-		execabs.Command(tofuBin, "version"),
-		p.Settings.NoLog,
+		Cmd:     execabs.Command(tofuBin, "version"),
+		Private: p.Settings.NoLog,
 	}
 }
 
@@ -30,22 +30,19 @@ func (p *Plugin) initCommand() *Cmd {
 	args = append(args, "-input=false")
 
 	return &Cmd{
-		execabs.Command(tofuBin, args...),
-		false,
+		Cmd: execabs.Command(tofuBin, args...),
 	}
 }
 
 func (p *Plugin) getModulesCommand() *Cmd {
 	return &Cmd{
-		execabs.Command(tofuBin, "get"),
-		false,
+		Cmd: execabs.Command(tofuBin, "get"),
 	}
 }
 
 func (p *Plugin) validateCommand() *Cmd {
 	return &Cmd{
-		execabs.Command(tofuBin, "validate"),
-		false,
+		Cmd: execabs.Command(tofuBin, "validate"),
 	}
 }
 
@@ -71,8 +68,7 @@ func (p *Plugin) fmtCommand() *Cmd {
 	}
 
 	return &Cmd{
-		execabs.Command(tofuBin, args...),
-		false,
+		Cmd: execabs.Command(tofuBin, args...),
 	}
 }
 
@@ -108,8 +104,8 @@ func (p *Plugin) planCommand(destroy bool) *Cmd {
 	}
 
 	return &Cmd{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
 
@@ -141,8 +137,8 @@ func (p *Plugin) applyCommand() *Cmd {
 	args = append(args, p.Settings.OutFile)
 
 	return &Cmd{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
 
@@ -170,7 +166,7 @@ func (p *Plugin) destroyCommand() *Cmd {
 	args = append(args, "-auto-approve")
 
 	return &Cmd{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
