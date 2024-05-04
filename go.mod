@@ -5,7 +5,7 @@ go 1.22
 require (
 	github.com/Masterminds/semver/v3 v3.2.1
 	github.com/rs/zerolog v1.32.0
-	github.com/thegeeklab/wp-plugin-go/v2 v2.0.0
+	github.com/thegeeklab/wp-plugin-go/v2 v2.0.1
 	github.com/urfave/cli/v2 v2.27.2
 	golang.org/x/sys v0.19.0
 )
