@@ -10,19 +10,14 @@ const (
 	tofuBin = "/usr/local/bin/tofu"
 )
 
-type pluginCommand struct {
-	cmd     *execabs.Cmd
-	private bool
-}
-
-func (p *Plugin) versionCommand() *pluginCommand {
-	return &pluginCommand{
-		execabs.Command(tofuBin, "version"),
-		false,
+func (p *Plugin) versionCommand() *Cmd {
+	return &Cmd{
+		Cmd:     execabs.Command(tofuBin, "version"),
+		Private: p.Settings.NoLog,
 	}
 }
 
-func (p *Plugin) initCommand() *pluginCommand {
+func (p *Plugin) initCommand() *Cmd {
 	args := []string{
 		"init",
 	}
@@ -34,27 +29,24 @@ func (p *Plugin) initCommand() *pluginCommand {
 	// Fail tofu execution on prompt
 	args = append(args, "-input=false")
 
-	return &pluginCommand{
-		execabs.Command(tofuBin, args...),
-		false,
+	return &Cmd{
+		Cmd: execabs.Command(tofuBin, args...),
 	}
 }
 
-func (p *Plugin) getModulesCommand() *pluginCommand {
-	return &pluginCommand{
-		execabs.Command(tofuBin, "get"),
-		false,
+func (p *Plugin) getModulesCommand() *Cmd {
+	return &Cmd{
+		Cmd: execabs.Command(tofuBin, "get"),
 	}
 }
 
-func (p *Plugin) validateCommand() *pluginCommand {
-	return &pluginCommand{
-		execabs.Command(tofuBin, "validate"),
-		false,
+func (p *Plugin) validateCommand() *Cmd {
+	return &Cmd{
+		Cmd: execabs.Command(tofuBin, "validate"),
 	}
 }
 
-func (p *Plugin) fmtCommand() *pluginCommand {
+func (p *Plugin) fmtCommand() *Cmd {
 	args := []string{
 		"fmt",
 	}
@@ -75,13 +67,12 @@ func (p *Plugin) fmtCommand() *pluginCommand {
 		args = append(args, fmt.Sprintf("-check=%t", *p.Settings.FmtOptions.Check))
 	}
 
-	return &pluginCommand{
-		execabs.Command(tofuBin, args...),
-		false,
+	return &Cmd{
+		Cmd: execabs.Command(tofuBin, args...),
 	}
 }
 
-func (p *Plugin) planCommand(destroy bool) *pluginCommand {
+func (p *Plugin) planCommand(destroy bool) *Cmd {
 	args := []string{
 		"plan",
 	}
@@ -112,13 +103,13 @@ func (p *Plugin) planCommand(destroy bool) *pluginCommand {
 		args = append(args, "-refresh=false")
 	}
 
-	return &pluginCommand{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+	return &Cmd{
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
 
-func (p *Plugin) applyCommand() *pluginCommand {
+func (p *Plugin) applyCommand() *Cmd {
 	args := []string{
 		"apply",
 	}
@@ -145,13 +136,13 @@ func (p *Plugin) applyCommand() *pluginCommand {
 
 	args = append(args, p.Settings.OutFile)
 
-	return &pluginCommand{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+	return &Cmd{
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
 
-func (p *Plugin) destroyCommand() *pluginCommand {
+func (p *Plugin) destroyCommand() *Cmd {
 	args := []string{
 		"destroy",
 	}
@@ -174,8 +165,8 @@ func (p *Plugin) destroyCommand() *pluginCommand {
 
 	args = append(args, "-auto-approve")
 
-	return &pluginCommand{
-		execabs.Command(tofuBin, args...),
-		p.Settings.NoLog,
+	return &Cmd{
+		Cmd:     execabs.Command(tofuBin, args...),
+		Private: p.Settings.NoLog,
 	}
 }
