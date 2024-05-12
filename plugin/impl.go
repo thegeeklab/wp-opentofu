@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"os"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	"github.com/thegeeklab/wp-plugin-go/v2/trace"
 	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
@@ -118,22 +116,16 @@ func (p *Plugin) Execute() error {
 		return err
 	}
 
-	for _, bc := range batchCmd {
-		bc.Stdout = os.Stdout
-		bc.Stderr = os.Stderr
-		trace.Cmd(bc.Cmd)
-
-		bc.Env = os.Environ()
-
-		if bc.Private {
-			bc.Stdout = io.Discard
+	for _, cmd := range batchCmd {
+		if cmd == nil {
+			continue
 		}
 
 		if p.Settings.RootDir != "" {
-			bc.Dir = p.Settings.RootDir
+			cmd.Dir = p.Settings.RootDir
 		}
 
-		if err := bc.Run(); err != nil {
+		if err := cmd.Run(); err != nil {
 			return err
 		}
 	}
