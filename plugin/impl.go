@@ -8,7 +8,9 @@ import (
 	"io"
 	"os"
 
+	"github.com/thegeeklab/wp-opentofu/tofu"
 	"github.com/thegeeklab/wp-plugin-go/v2/trace"
+	"github.com/thegeeklab/wp-plugin-go/v2/types"
 )
 
 var (
@@ -43,21 +45,21 @@ func (p *Plugin) run(ctx context.Context) error {
 
 func (p *Plugin) FlagsFromContext() error {
 	if p.Context.String("init-option") != "" {
-		initOptions := InitOptions{}
+		initOptions := tofu.InitOptions{}
 		if err := json.Unmarshal([]byte(p.Context.String("init-option")), &initOptions); err != nil {
 			return fmt.Errorf("cannot unmarshal init_option: %w", err)
 		}
 
-		p.Settings.InitOptions = initOptions
+		p.Settings.Tofu.InitOptions = initOptions
 	}
 
 	if p.Context.String("fmt-option") != "" {
-		fmtOptions := FmtOptions{}
+		fmtOptions := tofu.FmtOptions{}
 		if err := json.Unmarshal([]byte(p.Context.String("fmt-option")), &fmtOptions); err != nil {
 			return fmt.Errorf("cannot unmarshal fmt_option: %w", err)
 		}
 
-		p.Settings.FmtOptions = fmtOptions
+		p.Settings.Tofu.FmtOptions = fmtOptions
 	}
 
 	return nil
@@ -70,9 +72,9 @@ func (p *Plugin) Validate() error {
 		p.Settings.DataDir = value
 	}
 
-	p.Settings.OutFile = "plan.tfout"
+	p.Settings.Tofu.OutFile = "plan.tfout"
 	if p.Settings.DataDir == ".terraform" {
-		p.Settings.OutFile = fmt.Sprintf("%s.plan.tfout", p.Settings.DataDir)
+		p.Settings.Tofu.OutFile = fmt.Sprintf("%s.plan.tfout", p.Settings.DataDir)
 	}
 
 	return nil
@@ -80,8 +82,10 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	batchCmd := make([]*Cmd, 0)
-	batchCmd = append(batchCmd, p.versionCommand())
+	tofu := p.Settings.Tofu
+	batchCmd := make([]*types.Cmd, 0)
+
+	batchCmd = append(batchCmd, tofu.Version())
 
 	if p.Settings.TofuVersion != "" {
 		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
@@ -90,29 +94,29 @@ func (p *Plugin) Execute() error {
 		}
 	}
 
-	batchCmd = append(batchCmd, p.initCommand())
-	batchCmd = append(batchCmd, p.getModulesCommand())
+	batchCmd = append(batchCmd, tofu.Init())
+	batchCmd = append(batchCmd, tofu.GetModules())
 
 	for _, action := range p.Settings.Action.Value() {
 		switch action {
 		case "fmt":
-			batchCmd = append(batchCmd, p.fmtCommand())
+			batchCmd = append(batchCmd, tofu.Fmt())
 		case "validate":
-			batchCmd = append(batchCmd, p.validateCommand())
+			batchCmd = append(batchCmd, tofu.Validate())
 		case "plan":
-			batchCmd = append(batchCmd, p.planCommand(false))
+			batchCmd = append(batchCmd, tofu.Plan(false))
 		case "plan-destroy":
-			batchCmd = append(batchCmd, p.planCommand(true))
+			batchCmd = append(batchCmd, tofu.Plan(true))
 		case "apply":
-			batchCmd = append(batchCmd, p.applyCommand())
+			batchCmd = append(batchCmd, tofu.Apply())
 		case "destroy":
-			batchCmd = append(batchCmd, p.destroyCommand())
+			batchCmd = append(batchCmd, tofu.Destroy())
 		default:
 			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
 		}
 	}
 
-	if err := deleteDir(p.Settings.DataDir); err != nil {
+	if err := os.RemoveAll(p.Settings.DataDir); err != nil {
 		return err
 	}
 
@@ -136,5 +140,5 @@ func (p *Plugin) Execute() error {
 		}
 	}
 
-	return deleteDir(p.Settings.DataDir)
+	return os.RemoveAll(p.Settings.DataDir)
 }

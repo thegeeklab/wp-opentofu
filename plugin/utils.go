@@ -13,6 +13,7 @@ import (
 
 	"github.com/Masterminds/semver/v3"
 	"github.com/rs/zerolog/log"
+	"github.com/thegeeklab/wp-opentofu/tofu"
 )
 
 func installPackage(ctx context.Context, client *http.Client, version string, maxSize int64) error {
@@ -34,7 +35,7 @@ func installPackage(ctx context.Context, client *http.Client, version string, ma
 	}
 
 	defer func() {
-		_ = deleteDir(tmpdir)
+		_ = os.RemoveAll(tmpdir)
 	}()
 
 	log.Debug().
@@ -51,7 +52,7 @@ func installPackage(ctx context.Context, client *http.Client, version string, ma
 		return fmt.Errorf("failed to unzip: %w", err)
 	}
 
-	if err := os.Rename(filepath.Join(tmpdir, "tofu"), tofuBin); err != nil {
+	if err := os.Rename(filepath.Join(tmpdir, "tofu"), tofu.TofuBin); err != nil {
 		return fmt.Errorf("failed to rename: %w", err)
 	}
 
@@ -168,8 +169,4 @@ func sanitizeArchivePath(d, t string) (string, error) {
 	}
 
 	return "", fmt.Errorf("%w: %v", ErrTaintedPath, t)
-}
-
-func deleteDir(path string) error {
-	return os.RemoveAll(path)
 }
