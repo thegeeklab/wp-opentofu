@@ -82,10 +82,8 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	tofu := p.Settings.Tofu
 	batchCmd := make([]*types.Cmd, 0)
-
-	batchCmd = append(batchCmd, tofu.Version())
+	batchCmd = append(batchCmd, p.Settings.Tofu.Version())
 
 	if p.Settings.TofuVersion != "" {
 		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
@@ -94,23 +92,23 @@ func (p *Plugin) Execute() error {
 		}
 	}
 
-	batchCmd = append(batchCmd, tofu.Init())
-	batchCmd = append(batchCmd, tofu.GetModules())
+	batchCmd = append(batchCmd, p.Settings.Tofu.Init())
+	batchCmd = append(batchCmd, p.Settings.Tofu.GetModules())
 
 	for _, action := range p.Settings.Action.Value() {
 		switch action {
 		case "fmt":
-			batchCmd = append(batchCmd, tofu.Fmt())
+			batchCmd = append(batchCmd, p.Settings.Tofu.Fmt())
 		case "validate":
-			batchCmd = append(batchCmd, tofu.Validate())
+			batchCmd = append(batchCmd, p.Settings.Tofu.Validate())
 		case "plan":
-			batchCmd = append(batchCmd, tofu.Plan(false))
+			batchCmd = append(batchCmd, p.Settings.Tofu.Plan(false))
 		case "plan-destroy":
-			batchCmd = append(batchCmd, tofu.Plan(true))
+			batchCmd = append(batchCmd, p.Settings.Tofu.Plan(true))
 		case "apply":
-			batchCmd = append(batchCmd, tofu.Apply())
+			batchCmd = append(batchCmd, p.Settings.Tofu.Apply())
 		case "destroy":
-			batchCmd = append(batchCmd, tofu.Destroy())
+			batchCmd = append(batchCmd, p.Settings.Tofu.Destroy())
 		default:
 			return fmt.Errorf("%w: %s", ErrActionUnknown, action)
 		}
