@@ -3,9 +3,9 @@ package plugin
 import (
 	"fmt"
 
+	"github.com/thegeeklab/wp-opentofu/tofu"
 	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/sys/execabs"
 )
 
 //go:generate go run ../internal/docs/main.go -output=../docs/data/data-raw.yaml
@@ -18,39 +18,11 @@ type Plugin struct {
 
 // Settings for the Plugin.
 type Settings struct {
-	Action cli.StringSlice
-
-	TofuVersion string
-	InitOptions InitOptions
-	FmtOptions  FmtOptions
-
+	Action      cli.StringSlice
 	RootDir     string
 	DataDir     string
-	OutFile     string
-	Parallelism int
-	Targets     cli.StringSlice
-	Refresh     bool
-	NoLog       bool
-}
-
-// InitOptions include options for the OpenTofu init command.
-type InitOptions struct {
-	BackendConfig []string `json:"backend-config"`
-	Lock          *bool    `json:"lock"`
-	LockTimeout   string   `json:"lock-timeout"`
-}
-
-// FmtOptions fmt options for the OpenTofu fmt command.
-type FmtOptions struct {
-	List  *bool `json:"list"`
-	Write *bool `json:"write"`
-	Diff  *bool `json:"diff"`
-	Check *bool `json:"check"`
-}
-
-type Cmd struct {
-	*execabs.Cmd
-	Private bool
+	TofuVersion string
+	Tofu        tofu.Tofu
 }
 
 func New(e wp.ExecuteFunc, build ...string) *Plugin {
@@ -123,14 +95,14 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Name:        "no-log",
 			Usage:       "suppress tofu command output for `plan`, `apply` and `destroy` action",
 			EnvVars:     []string{"PLUGIN_NO_LOG"},
-			Destination: &settings.NoLog,
+			Destination: &settings.Tofu.NoLog,
 			Category:    category,
 		},
 		&cli.StringSliceFlag{
 			Name:        "targets",
 			Usage:       "targets to run `plan` or `apply` action on",
 			EnvVars:     []string{"PLUGIN_TARGETS"},
-			Destination: &settings.Targets,
+			Destination: &settings.Tofu.Targets,
 			Category:    category,
 		},
 		&cli.StringFlag{
@@ -144,7 +116,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Name:        "refresh",
 			Usage:       "enables refreshing of the state before `plan` and `apply` commands",
 			EnvVars:     []string{"PLUGIN_REFRESH"},
-			Destination: &settings.Refresh,
+			Destination: &settings.Tofu.Refresh,
 			Value:       true,
 			Category:    category,
 		},
