@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	"github.com/thegeeklab/wp-plugin-go/v3/types"
 )
 
 var (
