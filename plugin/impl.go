@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 )
 
 var (
@@ -80,7 +80,7 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
-	batchCmd := make([]*types.Cmd, 0)
+	batchCmd := make([]*plugin_exec.Cmd, 0)
 	batchCmd = append(batchCmd, p.Settings.Tofu.Version())
 
 	if p.Settings.TofuVersion != "" {

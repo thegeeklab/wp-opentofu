@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	wp "github.com/thegeeklab/wp-plugin-go/v2/plugin"
+	plugin_base "github.com/thegeeklab/wp-plugin-go/v3/plugin"
 	"github.com/urfave/cli/v2"
 )
 
@@ -12,7 +12,7 @@ import (
 
 // Plugin implements provide the plugin.
 type Plugin struct {
-	*wp.Plugin
+	*plugin_base.Plugin
 	Settings *Settings
 }
 
@@ -25,15 +25,15 @@ type Settings struct {
 	Tofu        tofu.Tofu
 }
 
-func New(e wp.ExecuteFunc, build ...string) *Plugin {
+func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 	p := &Plugin{
 		Settings: &Settings{},
 	}
 
-	options := wp.Options{
+	options := plugin_base.Options{
 		Name:                "wp-opentofu",
 		Description:         "Manage infrastructure with OpenTofu",
-		Flags:               Flags(p.Settings, wp.FlagsPluginCategory),
+		Flags:               Flags(p.Settings, plugin_base.FlagsPluginCategory),
 		Execute:             p.run,
 		HideWoodpeckerFlags: true,
 	}
@@ -50,7 +50,7 @@ func New(e wp.ExecuteFunc, build ...string) *Plugin {
 		options.Execute = e
 	}
 
-	p.Plugin = wp.New(options)
+	p.Plugin = plugin_base.New(options)
 
 	return p
 }
