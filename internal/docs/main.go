@@ -11,8 +11,8 @@ import (
 	"time"
 
 	"github.com/thegeeklab/wp-opentofu/plugin"
-	"github.com/thegeeklab/wp-plugin-go/v2/docs"
-	wp_template "github.com/thegeeklab/wp-plugin-go/v2/template"
+	"github.com/thegeeklab/wp-plugin-go/v3/docs"
+	wp_template "github.com/thegeeklab/wp-plugin-go/v3/template"
 )
 
 func main() {

@@ -2,10 +2,10 @@ package tofu
 
 import (
 	"fmt"
+	"os"
 
-	"github.com/thegeeklab/wp-plugin-go/v2/types"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v3/exec"
 	"github.com/urfave/cli/v2"
-	"golang.org/x/sys/execabs"
 )
 
 const TofuBin = "/usr/local/bin/tofu"
@@ -36,14 +36,18 @@ type FmtOptions struct {
 	Check *bool `json:"check"`
 }
 
-func (t *Tofu) Version() *types.Cmd {
-	return &types.Cmd{
-		Cmd:     execabs.Command(TofuBin, "version"),
-		Private: t.NoLog,
+func (t *Tofu) Version() *plugin_exec.Cmd {
+	cmd := plugin_exec.Command(TofuBin, "version")
+
+	if !t.NoLog {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
+
+	return cmd
 }
 
-func (t *Tofu) Init() *types.Cmd {
+func (t *Tofu) Init() *plugin_exec.Cmd {
 	args := []string{
 		"init",
 	}
@@ -55,24 +59,30 @@ func (t *Tofu) Init() *types.Cmd {
 	// Fail tofu execution on prompt
 	args = append(args, "-input=false")
 
-	return &types.Cmd{
-		Cmd: execabs.Command(TofuBin, args...),
-	}
+	cmd := plugin_exec.Command(TofuBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
-func (t *Tofu) GetModules() *types.Cmd {
-	return &types.Cmd{
-		Cmd: execabs.Command(TofuBin, "get"),
-	}
+func (t *Tofu) GetModules() *plugin_exec.Cmd {
+	cmd := plugin_exec.Command(TofuBin, "get")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
-func (t *Tofu) Validate() *types.Cmd {
-	return &types.Cmd{
-		Cmd: execabs.Command(TofuBin, "validate"),
-	}
+func (t *Tofu) Validate() *plugin_exec.Cmd {
+	cmd := plugin_exec.Command(TofuBin, "validate")
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
-func (t *Tofu) Fmt() *types.Cmd {
+func (t *Tofu) Fmt() *plugin_exec.Cmd {
 	args := []string{
 		"fmt",
 	}
@@ -93,12 +103,14 @@ func (t *Tofu) Fmt() *types.Cmd {
 		args = append(args, fmt.Sprintf("-check=%t", *t.FmtOptions.Check))
 	}
 
-	return &types.Cmd{
-		Cmd: execabs.Command(TofuBin, args...),
-	}
+	cmd := plugin_exec.Command(TofuBin, args...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+
+	return cmd
 }
 
-func (t *Tofu) Plan(destroy bool) *types.Cmd {
+func (t *Tofu) Plan(destroy bool) *plugin_exec.Cmd {
 	args := []string{
 		"plan",
 	}
@@ -129,13 +141,17 @@ func (t *Tofu) Plan(destroy bool) *types.Cmd {
 		args = append(args, "-refresh=false")
 	}
 
-	return &types.Cmd{
-		Cmd:     execabs.Command(TofuBin, args...),
-		Private: t.NoLog,
+	cmd := plugin_exec.Command(TofuBin, args...)
+
+	if !t.NoLog {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
+
+	return cmd
 }
 
-func (t *Tofu) Apply() *types.Cmd {
+func (t *Tofu) Apply() *plugin_exec.Cmd {
 	args := []string{
 		"apply",
 	}
@@ -164,13 +180,17 @@ func (t *Tofu) Apply() *types.Cmd {
 		args = append(args, t.OutFile)
 	}
 
-	return &types.Cmd{
-		Cmd:     execabs.Command(TofuBin, args...),
-		Private: t.NoLog,
+	cmd := plugin_exec.Command(TofuBin, args...)
+
+	if !t.NoLog {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
+
+	return cmd
 }
 
-func (t *Tofu) Destroy() *types.Cmd {
+func (t *Tofu) Destroy() *plugin_exec.Cmd {
 	args := []string{
 		"destroy",
 	}
@@ -193,8 +213,12 @@ func (t *Tofu) Destroy() *types.Cmd {
 
 	args = append(args, "-auto-approve")
 
-	return &types.Cmd{
-		Cmd:     execabs.Command(TofuBin, args...),
-		Private: t.NoLog,
+	cmd := plugin_exec.Command(TofuBin, args...)
+
+	if !t.NoLog {
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
+
+	return cmd
 }

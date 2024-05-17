@@ -449,7 +449,10 @@ func TestTofu_Apply(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Apply()
 			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.tofu.NoLog, cmd.Private)
+
+			if tt.tofu.NoLog {
+				assert.Equal(t, cmd.Stdout, nil)
+			}
 		})
 	}
 }
@@ -538,8 +541,12 @@ func TestTofu_Destroy(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Destroy()
+
 			assert.Equal(t, tt.want, cmd.Cmd.Args)
-			assert.Equal(t, tt.tofu.NoLog, cmd.Private)
+
+			if tt.tofu.NoLog {
+				assert.Equal(t, cmd.Stdout, nil)
+			}
 		})
 	}
 }
