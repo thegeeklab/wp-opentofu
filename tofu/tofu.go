@@ -23,9 +23,11 @@ type Tofu struct {
 
 // InitOptions include options for the OpenTofu init command.
 type InitOptions struct {
+	Backend       *bool    `json:"backend"`
 	BackendConfig []string `json:"backend-config"`
 	Lock          *bool    `json:"lock"`
 	LockTimeout   string   `json:"lock-timeout"`
+	Lockfile      string   `json:"lockfile"`
 }
 
 // FmtOptions fmt options for the OpenTofu fmt command.
@@ -52,8 +54,24 @@ func (t *Tofu) Init() *plugin_exec.Cmd {
 		"init",
 	}
 
+	if t.InitOptions.Backend != nil {
+		args = append(args, fmt.Sprintf("-backend=%t", *t.InitOptions.Backend))
+	}
+
 	for _, v := range t.InitOptions.BackendConfig {
 		args = append(args, fmt.Sprintf("-backend-config=%s", v))
+	}
+
+	if t.InitOptions.Lock != nil {
+		args = append(args, fmt.Sprintf("-lock=%t", *t.InitOptions.Lock))
+	}
+
+	if t.InitOptions.Lockfile != "" {
+		args = append(args, fmt.Sprintf("-lockfile=%s", t.InitOptions.Lockfile))
+	}
+
+	if t.InitOptions.LockTimeout != "" {
+		args = append(args, fmt.Sprintf("-lock-timeout=%s", t.InitOptions.LockTimeout))
 	}
 
 	// Fail tofu execution on prompt
