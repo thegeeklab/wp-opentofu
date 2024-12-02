@@ -26,7 +26,8 @@ ENV TOFU_VERSION="${TOFU_VERSION:-v1.8.6}"
 
 RUN apk --update add --virtual .build-deps libarchive-tools && \
     apk add --no-cache curl git openssh-client && \
-    curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_amd64.zip" | \
+    ARCH=$(apk --print-arch | sed 's/x86_64/amd64/; s/aarch64/arm64/') && \
+    curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_${ARCH}.zip" | \
         bsdtar -xf - -C /usr/local/bin tofu && \
     chmod 755 /usr/local/bin/tofu && \
     apk del .build-deps && \
