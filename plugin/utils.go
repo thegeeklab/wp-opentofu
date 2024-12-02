@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -24,9 +25,10 @@ func installPackage(ctx context.Context, client *http.Client, version string, ma
 	}
 
 	packageURL := fmt.Sprintf(
-		"https://github.com/opentofu/opentofu/releases/download/v%s/tofu_%s_linux_amd64.zip",
+		"https://github.com/opentofu/opentofu/releases/download/v%s/tofu_%s_linux_%s.zip",
 		semverVersion.String(),
 		semverVersion.String(),
+		runtime.GOARCH,
 	)
 
 	tmpdir, err := os.MkdirTemp("/tmp", "tofu_dl_")
