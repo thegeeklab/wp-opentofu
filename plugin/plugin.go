@@ -13,6 +13,7 @@ import (
 // Plugin implements provide the plugin.
 type Plugin struct {
 	*plugin_base.Plugin
+	*plugin_base.Environment
 	Settings *Settings
 }
 
