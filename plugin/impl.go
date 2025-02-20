@@ -125,9 +125,7 @@ func (p *Plugin) Execute() error {
 			cmd.Dir = p.Settings.RootDir
 		}
 
-		if cmd.Env == nil {
-			cmd.Env = append(os.Environ(), p.Environment.Value()...)
-		}
+		cmd.Env = append(cmd.Env, p.Environment.Value()...)
 
 		if err := cmd.Run(); err != nil {
 			return err
