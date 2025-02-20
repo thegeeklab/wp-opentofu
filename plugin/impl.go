@@ -66,7 +66,7 @@ func (p *Plugin) FlagsFromContext() error {
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
 	p.Settings.DataDir = ".terraform"
-	if value, ok := os.LookupEnv("TF_DATA_DIR"); ok {
+	if value, ok := p.Environment.Lookup("TF_DATA_DIR"); ok {
 		p.Settings.DataDir = value
 	}
 
@@ -124,6 +124,8 @@ func (p *Plugin) Execute() error {
 		if p.Settings.RootDir != "" {
 			cmd.Dir = p.Settings.RootDir
 		}
+
+		cmd.Env = append(cmd.Env, p.Environment.Value()...)
 
 		if err := cmd.Run(); err != nil {
 			return err

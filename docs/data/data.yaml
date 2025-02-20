@@ -33,6 +33,28 @@ properties:
     defaultValue: "info"
     required: false
 
+  - name: environment
+    description: |
+      Plugin environment variables exposed to all tofu commands. In contrast to the step environment,
+      this option can be used if environment variables are to be used in conjunction with `from_secret`.
+      Example:
+
+      ```yaml
+      steps:
+      - name: tofu
+        image: quay.io/thegeeklab/wp-opentofu
+        settings:
+          actions:
+            - plan
+          environment:
+            AWS_ACCESS_KEY_ID:
+              from_secret: AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY:
+              from_secret: AWS_SECRET_ACCESS_KEY
+      ```
+    type: map
+    required: false
+
   - name: no_log
     description: |
       Suppress tofu command output for `plan`, `apply` and `destroy` action.
