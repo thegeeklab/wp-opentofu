@@ -7,14 +7,14 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFlags(t *testing.T) {
+func TestEnvironmentFlag(t *testing.T) {
 	tests := []struct {
 		name string
 		envs map[string]string
 		want []string
 	}{
 		{
-			name: "parse secrets list with escape",
+			name: "simple environment",
 			envs: map[string]string{
 				"PLUGIN_ENVIRONMENT": `{"env1": "value1", "env2": "value2"}`,
 			},
