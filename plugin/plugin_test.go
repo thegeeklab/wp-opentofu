@@ -2,8 +2,9 @@ package plugin
 
 import (
 	"context"
-	"reflect"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFlags(t *testing.T) {
@@ -25,17 +26,17 @@ func TestFlags(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		for key, value := range tt.envs {
-			t.Setenv(key, value)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			for key, value := range tt.envs {
+				t.Setenv(key, value)
+			}
 
-		got := New(func(_ context.Context) error { return nil })
+			got := New(func(_ context.Context) error { return nil })
 
-		_ = got.App.Run([]string{"wp-opentofu"})
-		_ = got.FlagsFromContext()
+			_ = got.App.Run([]string{"wp-opentofu"})
+			_ = got.FlagsFromContext()
 
-		if !reflect.DeepEqual(got.Plugin.Environment.Value(), tt.want) {
-			t.Errorf("%q. Plugin.Environment = %v, want %v", tt.name, got.Plugin.Environment.Value(), tt.want)
-		}
+			assert.EqualValues(t, tt.want, got.Plugin.Environment.Value())
+		})
 	}
 }
