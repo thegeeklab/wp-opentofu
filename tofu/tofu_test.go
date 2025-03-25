@@ -27,7 +27,7 @@ func TestTofu_Version(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Version()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -81,7 +81,7 @@ func TestTofu_Init(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Init()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -102,7 +102,7 @@ func TestTofu_GetModules(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.GetModules()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -123,7 +123,7 @@ func TestTofu_Validate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Validate()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -218,7 +218,7 @@ func TestTofu_Fmt(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Fmt()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -337,7 +337,7 @@ func TestTofu_Plan(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Plan(tt.destroy)
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 		})
 	}
 }
@@ -448,7 +448,7 @@ func TestTofu_Apply(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Apply()
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 
 			if tt.tofu.NoLog {
 				assert.Equal(t, cmd.Stdout, nil)
@@ -542,7 +542,7 @@ func TestTofu_Destroy(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			cmd := tt.tofu.Destroy()
 
-			assert.Equal(t, tt.want, cmd.Cmd.Args)
+			assert.Equal(t, tt.want, cmd.Args)
 
 			if tt.tofu.NoLog {
 				assert.Equal(t, cmd.Stdout, nil)

@@ -36,7 +36,7 @@ func TestEnvironmentFlag(t *testing.T) {
 			_ = got.App.Run([]string{"wp-opentofu"})
 			_ = got.FlagsFromContext()
 
-			assert.EqualValues(t, tt.want, got.Plugin.Environment.Value())
+			assert.EqualValues(t, tt.want, got.Environment.Value())
 		})
 	}
 }

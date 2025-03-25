@@ -84,7 +84,7 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Tofu.Version())
 
 	if p.Settings.TofuVersion != "" {
-		err := installPackage(p.Plugin.Network.Context, p.Plugin.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
+		err := installPackage(p.Network.Context, p.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
 		if err != nil {
 			return err
 		}
