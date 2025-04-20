@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/urfave/cli/v3"
 )
 
 func boolPtr(b bool) *bool {
@@ -267,7 +266,7 @@ func TestTofu_Plan(t *testing.T) {
 		{
 			name: "plan with targets",
 			tofu: &Tofu{
-				Targets: *cli.NewStringSlice("target1", "target2"),
+				Targets: []string{"target1", "target2"},
 			},
 			destroy: false,
 			want: []string{
@@ -360,7 +359,7 @@ func TestTofu_Apply(t *testing.T) {
 		{
 			name: "apply with targets",
 			tofu: &Tofu{
-				Targets: *cli.NewStringSlice("target1", "target2"),
+				Targets: []string{"target1", "target2"},
 			},
 			want: []string{
 				TofuBin,
@@ -475,7 +474,7 @@ func TestTofu_Destroy(t *testing.T) {
 		{
 			name: "destroy with targets",
 			tofu: &Tofu{
-				Targets: *cli.NewStringSlice("target1", "target2"),
+				Targets: []string{"target1", "target2"},
 			},
 			want: []string{
 				TofuBin,
