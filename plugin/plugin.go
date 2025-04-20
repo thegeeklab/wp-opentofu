@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	plugin_base "github.com/thegeeklab/wp-plugin-go/v4/plugin"
-	"github.com/urfave/cli/v2"
+	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
+	"github.com/urfave/cli/v3"
 )
 
 //go:generate go run ../internal/docs/main.go -output=../docs/data/data-raw.yaml
@@ -18,7 +18,7 @@ type Plugin struct {
 
 // Settings for the Plugin.
 type Settings struct {
-	Action      cli.StringSlice
+	Action      []string
 	RootDir     string
 	DataDir     string
 	TofuVersion string
@@ -61,61 +61,61 @@ func Flags(settings *Settings, category string) []cli.Flag {
 		&cli.StringSliceFlag{
 			Name:        "action",
 			Usage:       "tofu actions to execute",
-			EnvVars:     []string{"PLUGIN_ACTION"},
-			Value:       cli.NewStringSlice("validate", "plan", "apply"),
+			Sources:     cli.EnvVars("PLUGIN_ACTION"),
+			Value:       []string{"validate", "plan", "apply"},
 			Destination: &settings.Action,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:     "init-option",
 			Usage:    "tofu init command options, see https://opentofu.org/docs/cli/commands/init/",
-			EnvVars:  []string{"PLUGIN_INIT_OPTION"},
+			Sources:  cli.EnvVars("PLUGIN_INIT_OPTION"),
 			Category: category,
 		},
 		&cli.StringFlag{
 			Name:     "fmt-option",
 			Usage:    "options for the fmt command, see https://opentofu.org/docs/cli/commands/fmt/",
-			EnvVars:  []string{"PLUGIN_FMT_OPTION"},
+			Sources:  cli.EnvVars("PLUGIN_FMT_OPTION"),
 			Category: category,
 		},
 		&cli.IntFlag{
 			Name:     "parallelism",
 			Usage:    "number of concurrent operations",
-			EnvVars:  []string{"PLUGIN_PARALLELISM"},
+			Sources:  cli.EnvVars("PLUGIN_PARALLELISM"),
 			Category: category,
 		},
 		&cli.StringFlag{
 			Name:        "root-dir",
 			Usage:       "root directory where the tofu files live",
-			EnvVars:     []string{"PLUGIN_ROOT_DIR"},
+			Sources:     cli.EnvVars("PLUGIN_ROOT_DIR"),
 			Destination: &settings.RootDir,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "no-log",
 			Usage:       "suppress tofu command output for `plan`, `apply` and `destroy` action",
-			EnvVars:     []string{"PLUGIN_NO_LOG"},
+			Sources:     cli.EnvVars("PLUGIN_NO_LOG"),
 			Destination: &settings.Tofu.NoLog,
 			Category:    category,
 		},
 		&cli.StringSliceFlag{
 			Name:        "targets",
 			Usage:       "targets to run `plan` or `apply` action on",
-			EnvVars:     []string{"PLUGIN_TARGETS"},
+			Sources:     cli.EnvVars("PLUGIN_TARGETS"),
 			Destination: &settings.Tofu.Targets,
 			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "tofu-version",
 			Usage:       "tofu version to use",
-			EnvVars:     []string{"PLUGIN_TOFU_VERSION"},
+			Sources:     cli.EnvVars("PLUGIN_TOFU_VERSION"),
 			Destination: &settings.TofuVersion,
 			Category:    category,
 		},
 		&cli.BoolFlag{
 			Name:        "refresh",
 			Usage:       "enables refreshing of the state before `plan` and `apply` commands",
-			EnvVars:     []string{"PLUGIN_REFRESH"},
+			Sources:     cli.EnvVars("PLUGIN_REFRESH"),
 			Destination: &settings.Tofu.Refresh,
 			Value:       true,
 			Category:    category,

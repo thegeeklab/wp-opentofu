@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
 )
 
 var (
@@ -42,18 +42,18 @@ func (p *Plugin) run(ctx context.Context) error {
 }
 
 func (p *Plugin) FlagsFromContext() error {
-	if p.Context.String("init-option") != "" {
+	if p.App.String("init-option") != "" {
 		initOptions := tofu.InitOptions{}
-		if err := json.Unmarshal([]byte(p.Context.String("init-option")), &initOptions); err != nil {
+		if err := json.Unmarshal([]byte(p.App.String("init-option")), &initOptions); err != nil {
 			return fmt.Errorf("cannot unmarshal init_option: %w", err)
 		}
 
 		p.Settings.Tofu.InitOptions = initOptions
 	}
 
-	if p.Context.String("fmt-option") != "" {
+	if p.App.String("fmt-option") != "" {
 		fmtOptions := tofu.FmtOptions{}
-		if err := json.Unmarshal([]byte(p.Context.String("fmt-option")), &fmtOptions); err != nil {
+		if err := json.Unmarshal([]byte(p.App.String("fmt-option")), &fmtOptions); err != nil {
 			return fmt.Errorf("cannot unmarshal fmt_option: %w", err)
 		}
 
@@ -93,7 +93,7 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Tofu.Init())
 	batchCmd = append(batchCmd, p.Settings.Tofu.GetModules())
 
-	for _, action := range p.Settings.Action.Value() {
+	for _, action := range p.Settings.Action {
 		switch action {
 		case "fmt":
 			batchCmd = append(batchCmd, p.Settings.Tofu.Fmt())

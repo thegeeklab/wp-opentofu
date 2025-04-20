@@ -4,8 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v4/exec"
-	"github.com/urfave/cli/v2"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
 )
 
 const TofuBin = "/usr/local/bin/tofu"
@@ -16,7 +15,7 @@ type Tofu struct {
 
 	OutFile     string
 	Parallelism int
-	Targets     cli.StringSlice
+	Targets     []string
 	Refresh     bool
 	NoLog       bool
 }
@@ -139,7 +138,7 @@ func (t *Tofu) Plan(destroy bool) *plugin_exec.Cmd {
 		args = append(args, fmt.Sprintf("-out=%s", t.OutFile))
 	}
 
-	for _, value := range t.Targets.Value() {
+	for _, value := range t.Targets {
 		args = append(args, "--target", value)
 	}
 
@@ -174,7 +173,7 @@ func (t *Tofu) Apply() *plugin_exec.Cmd {
 		"apply",
 	}
 
-	for _, v := range t.Targets.Value() {
+	for _, v := range t.Targets {
 		args = append(args, "--target", v)
 	}
 
@@ -213,7 +212,7 @@ func (t *Tofu) Destroy() *plugin_exec.Cmd {
 		"destroy",
 	}
 
-	for _, v := range t.Targets.Value() {
+	for _, v := range t.Targets {
 		args = append(args, fmt.Sprintf("-target=%s", v))
 	}
 

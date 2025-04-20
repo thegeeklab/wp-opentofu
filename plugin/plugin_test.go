@@ -2,10 +2,22 @@ package plugin
 
 import (
 	"context"
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/urfave/cli/v3"
 )
+
+func setupPluginTest(t *testing.T) *Plugin {
+	t.Helper()
+
+	cli.HelpPrinter = func(_ io.Writer, _ string, _ interface{}) {}
+	got := New(func(_ context.Context) error { return nil })
+	_ = got.App.Run(t.Context(), []string{"wp-docker-buildx"})
+
+	return got
+}
 
 func TestEnvironmentFlag(t *testing.T) {
 	tests := []struct {
@@ -31,9 +43,7 @@ func TestEnvironmentFlag(t *testing.T) {
 				t.Setenv(key, value)
 			}
 
-			got := New(func(_ context.Context) error { return nil })
-
-			_ = got.App.Run([]string{"wp-opentofu"})
+			got := setupPluginTest(t)
 			_ = got.FlagsFromContext()
 
 			assert.ElementsMatch(t, tt.want, got.Environment.Value())
