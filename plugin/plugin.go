@@ -78,11 +78,12 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Sources:  cli.EnvVars("PLUGIN_FMT_OPTION"),
 			Category: category,
 		},
-		&cli.IntFlag{
-			Name:     "parallelism",
-			Usage:    "number of concurrent operations",
-			Sources:  cli.EnvVars("PLUGIN_PARALLELISM"),
-			Category: category,
+		&cli.Int64Flag{
+			Name:        "parallelism",
+			Usage:       "number of concurrent operations",
+			Sources:     cli.EnvVars("PLUGIN_PARALLELISM"),
+			Destination: &settings.Tofu.Parallelism,
+			Category:    category,
 		},
 		&cli.StringFlag{
 			Name:        "root-dir",

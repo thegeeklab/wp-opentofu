@@ -14,7 +14,7 @@ type Tofu struct {
 	FmtOptions  FmtOptions
 
 	OutFile     string
-	Parallelism int
+	Parallelism int64
 	Targets     []string
 	Refresh     bool
 	NoLog       bool
