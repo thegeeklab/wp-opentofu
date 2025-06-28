@@ -3,7 +3,7 @@ module github.com/thegeeklab/wp-opentofu
 go 1.24.4
 
 require (
-	github.com/Masterminds/semver/v3 v3.3.1
+	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.10.0
 	github.com/thegeeklab/wp-plugin-go/v6 v6.0.4
