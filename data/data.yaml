@@ -44,7 +44,7 @@ properties:
       - name: tofu
         image: quay.io/thegeeklab/wp-opentofu
         settings:
-          actions:
+          action:
             - plan
           environment:
             AWS_ACCESS_KEY_ID:
