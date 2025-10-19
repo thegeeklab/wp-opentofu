@@ -25,7 +25,7 @@ steps:
   - name: tofu
     image: quay.io/thegeeklab/wp-opentofu
     settings:
-      actions:
+      action:
         - validate
         - plan
 ```
