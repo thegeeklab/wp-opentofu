@@ -62,7 +62,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Name:        "action",
 			Usage:       "tofu actions to execute",
 			Sources:     cli.EnvVars("PLUGIN_ACTION"),
-			Value:       []string{"validate", "plan", "apply"},
+			Value:       []string{"validate", "plan"},
 			Destination: &settings.Action,
 			Category:    category,
 		},
