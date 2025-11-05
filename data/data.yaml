@@ -4,7 +4,7 @@ properties:
     description: |
       Tofu actions to execute.
     type: list
-    defaultValue: "validate,plan,apply"
+    defaultValue: "validate,plan"
     required: false
 
   - name: fmt_option
