@@ -20,8 +20,7 @@ var (
 )
 
 const (
-	maxDecompressionSize = 100 * 1024 * 1024
-	defaultDirPerm       = 0o755
+	defaultDirPerm = 0o755
 )
 
 //nolint:revive
@@ -84,7 +83,7 @@ func (p *Plugin) Execute() error {
 	batchCmd = append(batchCmd, p.Settings.Tofu.Version())
 
 	if p.Settings.TofuVersion != "" {
-		err := installPackage(p.Network.Context, p.Network.Client, p.Settings.TofuVersion, maxDecompressionSize)
+		err := installPackage(p.Network.Context, p.Network.Client, p.Settings.TofuVersion)
 		if err != nil {
 			return err
 		}
