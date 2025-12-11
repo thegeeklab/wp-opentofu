@@ -3,7 +3,6 @@ package plugin
 import (
 	"archive/zip"
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -17,7 +16,7 @@ import (
 	"github.com/thegeeklab/wp-opentofu/tofu"
 )
 
-func installPackage(ctx context.Context, client *http.Client, version string, maxSize int64) error {
+func installPackage(ctx context.Context, client *http.Client, version string) error {
 	// Sanitize user input
 	semverVersion, err := semver.NewVersion(version)
 	if err != nil {
@@ -50,7 +49,7 @@ func installPackage(ctx context.Context, client *http.Client, version string, ma
 		return fmt.Errorf("failed to download: %w", err)
 	}
 
-	if err := unzip(tmpfile, tmpdir, maxSize); err != nil {
+	if err := unzip(tmpfile, tmpdir); err != nil {
 		return fmt.Errorf("failed to unzip: %w", err)
 	}
 
@@ -95,7 +94,7 @@ func downloadPackage(ctx context.Context, client *http.Client, filepath, url str
 	return nil
 }
 
-func unzip(src, dest string, maxSize int64) error {
+func unzip(src, dest string) error {
 	r, err := zip.OpenReader(src)
 	if err != nil {
 		return err
@@ -132,22 +131,24 @@ func unzip(src, dest string, maxSize int64) error {
 		} else {
 			_ = os.MkdirAll(filepath.Dir(path), f.Mode())
 
-			f, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
+			if f.FileInfo().Size() == 0 {
+				return nil
+			}
+
+			outFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, f.Mode())
 			if err != nil {
 				return err
 			}
 
 			defer func() {
-				if err := f.Close(); err != nil {
+				if err := outFile.Close(); err != nil {
 					panic(err)
 				}
 			}()
 
-			written, err := io.CopyN(f, rc, maxSize)
-			if err != nil && !errors.Is(err, io.EOF) {
+			_, err = io.CopyN(outFile, rc, f.FileInfo().Size())
+			if err != nil {
 				return err
-			} else if written == maxSize {
-				return fmt.Errorf("%w: %d", ErrMaxSizeSizeLimit, maxSize)
 			}
 		}
 
