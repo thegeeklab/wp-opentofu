@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strconv"
 	"strings"
 
 	"github.com/Masterminds/semver/v3"
@@ -172,4 +173,69 @@ func sanitizeArchivePath(d, t string) (string, error) {
 	}
 
 	return "", fmt.Errorf("%w: %v", ErrTaintedPath, t)
+}
+
+// boolPtr returns a pointer to the bool value.
+func boolPtr(b bool) *bool {
+	return &b
+}
+
+// parseStringMapToInitOptions converts a string map to InitOptions struct.
+func parseStringMapToInitOptions(optionMap map[string]string) tofu.InitOptions {
+	initOptions := tofu.InitOptions{}
+
+	for key, value := range optionMap {
+		switch key {
+		case "backend":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				initOptions.Backend = boolPtr(parsedBool)
+			}
+		case "backend-config":
+			if value != "" {
+				initOptions.BackendConfig = []string{value}
+			}
+		case "lock":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				initOptions.Lock = boolPtr(parsedBool)
+			}
+		case "lockfile":
+			if value != "" {
+				initOptions.Lockfile = value
+			}
+		case "lock-timeout":
+			if value != "" {
+				initOptions.LockTimeout = value
+			}
+		}
+	}
+
+	return initOptions
+}
+
+// parseStringMapToFmtOptions converts a string map to FmtOptions struct.
+func parseStringMapToFmtOptions(optionMap map[string]string) tofu.FmtOptions {
+	fmtOptions := tofu.FmtOptions{}
+
+	for key, value := range optionMap {
+		switch key {
+		case "list":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				fmtOptions.List = boolPtr(parsedBool)
+			}
+		case "write":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				fmtOptions.Write = boolPtr(parsedBool)
+			}
+		case "diff":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				fmtOptions.Diff = boolPtr(parsedBool)
+			}
+		case "check":
+			if parsedBool, err := strconv.ParseBool(value); err == nil {
+				fmtOptions.Check = boolPtr(parsedBool)
+			}
+		}
+	}
+
+	return fmtOptions
 }

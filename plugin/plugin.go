@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
+	plugin_cli "github.com/thegeeklab/wp-plugin-go/v6/cli"
 	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
 	"github.com/urfave/cli/v3"
 )
@@ -18,11 +19,13 @@ type Plugin struct {
 
 // Settings for the Plugin.
 type Settings struct {
-	Action      []string
-	RootDir     string
-	DataDir     string
-	TofuVersion string
-	Tofu        tofu.Tofu
+	Action        []string
+	RootDir       string
+	DataDir       string
+	TofuVersion   string
+	Tofu          tofu.Tofu
+	InitOptionRaw map[string]string // Raw init options from StringMapFlag
+	FmtOptionRaw  map[string]string // Raw fmt options from StringMapFlag
 }
 
 func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
@@ -66,17 +69,19 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Action,
 			Category:    category,
 		},
-		&cli.StringFlag{
-			Name:     "init-option",
-			Usage:    "tofu init command options, see https://opentofu.org/docs/cli/commands/init/",
-			Sources:  cli.EnvVars("PLUGIN_INIT_OPTION"),
-			Category: category,
+		&plugin_cli.StringMapFlag{
+			Name:        "init-option",
+			Usage:       "tofu init command options, see https://opentofu.org/docs/cli/commands/init/",
+			Sources:     cli.EnvVars("PLUGIN_INIT_OPTION"),
+			Destination: &settings.InitOptionRaw,
+			Category:    category,
 		},
-		&cli.StringFlag{
-			Name:     "fmt-option",
-			Usage:    "options for the fmt command, see https://opentofu.org/docs/cli/commands/fmt/",
-			Sources:  cli.EnvVars("PLUGIN_FMT_OPTION"),
-			Category: category,
+		&plugin_cli.StringMapFlag{
+			Name:        "fmt-option",
+			Usage:       "options for the fmt command, see https://opentofu.org/docs/cli/commands/fmt/",
+			Sources:     cli.EnvVars("PLUGIN_FMT_OPTION"),
+			Destination: &settings.FmtOptionRaw,
+			Category:    category,
 		},
 		&cli.Int64Flag{
 			Name:        "parallelism",

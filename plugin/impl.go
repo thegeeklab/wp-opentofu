@@ -2,12 +2,10 @@ package plugin
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 
-	"github.com/thegeeklab/wp-opentofu/tofu"
 	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
 )
 
@@ -25,10 +23,6 @@ const (
 
 //nolint:revive
 func (p *Plugin) run(ctx context.Context) error {
-	if err := p.FlagsFromContext(); err != nil {
-		return fmt.Errorf("validation failed: %w", err)
-	}
-
 	if err := p.Validate(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
 	}
@@ -40,30 +34,18 @@ func (p *Plugin) run(ctx context.Context) error {
 	return nil
 }
 
-func (p *Plugin) FlagsFromContext() error {
-	if p.App.String("init-option") != "" {
-		initOptions := tofu.InitOptions{}
-		if err := json.Unmarshal([]byte(p.App.String("init-option")), &initOptions); err != nil {
-			return fmt.Errorf("cannot unmarshal init_option: %w", err)
-		}
-
+// Validate handles the settings validation of the plugin.
+func (p *Plugin) Validate() error {
+	if len(p.Settings.InitOptionRaw) > 0 {
+		initOptions := parseStringMapToInitOptions(p.Settings.InitOptionRaw)
 		p.Settings.Tofu.InitOptions = initOptions
 	}
 
-	if p.App.String("fmt-option") != "" {
-		fmtOptions := tofu.FmtOptions{}
-		if err := json.Unmarshal([]byte(p.App.String("fmt-option")), &fmtOptions); err != nil {
-			return fmt.Errorf("cannot unmarshal fmt_option: %w", err)
-		}
-
+	if len(p.Settings.FmtOptionRaw) > 0 {
+		fmtOptions := parseStringMapToFmtOptions(p.Settings.FmtOptionRaw)
 		p.Settings.Tofu.FmtOptions = fmtOptions
 	}
 
-	return nil
-}
-
-// Validate handles the settings validation of the plugin.
-func (p *Plugin) Validate() error {
 	p.Settings.DataDir = ".terraform"
 	if value, ok := p.Environment.Lookup("TF_DATA_DIR"); ok {
 		p.Settings.DataDir = value
