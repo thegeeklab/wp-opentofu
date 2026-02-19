@@ -23,7 +23,6 @@ const (
 	defaultDirPerm = 0o755
 )
 
-//nolint:revive
 func (p *Plugin) run(ctx context.Context) error {
 	if err := p.FlagsFromContext(); err != nil {
 		return fmt.Errorf("validation failed: %w", err)
