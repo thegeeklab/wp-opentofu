@@ -74,6 +74,8 @@ func downloadPackage(ctx context.Context, client *http.Client, filepath, url str
 		return err
 	}
 
+	//#nosec G704
+	// downloadPackage is a private func and url uses input sanitizing already
 	resp, err := client.Do(req)
 	if err != nil {
 		return err
