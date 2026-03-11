@@ -25,7 +25,7 @@ ARG TOFU_VERSION
 ENV TOFU_VERSION="${TOFU_VERSION:-v1.11.5}"
 
 RUN apk --update add --virtual .build-deps libarchive-tools && \
-    apk add --no-cache curl git openssh-client && \
+    apk add --no-cache curl git openssh-client zlib && \
     curl -SsfL "https://github.com/opentofu/opentofu/releases/download/${TOFU_VERSION}/tofu_${TOFU_VERSION##v}_linux_${TARGETARCH}.zip" | \
         bsdtar -xf - -C /usr/local/bin tofu && \
     chmod 755 /usr/local/bin/tofu && \
