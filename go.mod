@@ -1,6 +1,6 @@
 module github.com/thegeeklab/wp-opentofu
 
-go 1.26.4
+go 1.26.5
 
 require (
 	github.com/Masterminds/semver/v3 v3.5.0
