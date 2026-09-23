@@ -4,18 +4,26 @@ properties:
     description: |
       Tofu actions to execute.
     type: list
-    defaultValue: "validate,plan"
+    defaultValue: ["validate", "plan"]
+    required: false
+
+  - name: environment
+    description: |
+      Plugin environment variables.
+    type: dict
     required: false
 
   - name: fmt_option
     description: |
-      Options for the fmt command, see the OpenTofu [fmt command](https://opentofu.org/docs/cli/commands/fmt/) documentation.
+      Options for the fmt command, see the OpenTofu
+      [fmt command](https://opentofu.org/docs/cli/commands/fmt/) documentation.
     type: string
     required: false
 
   - name: init_option
     description: |
-      Tofu init command options, see the OpenTofu [init command](https://opentofu.org/docs/cli/commands/init/) documentation.
+      Tofu init command options, see the OpenTofu
+      [init command](https://opentofu.org/docs/cli/commands/init/) documentation.
     type: string
     required: false
 
@@ -31,28 +39,6 @@ properties:
       Plugin log level.
     type: string
     defaultValue: "info"
-    required: false
-
-  - name: environment
-    description: |
-      Plugin environment variables exposed to all tofu commands. In contrast to the step environment,
-      this option can be used if environment variables are to be used in conjunction with `from_secret`.
-      Example:
-
-      ```yaml
-      steps:
-      - name: tofu
-        image: quay.io/thegeeklab/wp-opentofu
-        settings:
-          action:
-            - plan
-          environment:
-            AWS_ACCESS_KEY_ID:
-              from_secret: AWS_ACCESS_KEY_ID
-            AWS_SECRET_ACCESS_KEY:
-              from_secret: AWS_SECRET_ACCESS_KEY
-      ```
-    type: map
     required: false
 
   - name: no_log

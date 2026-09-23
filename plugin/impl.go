@@ -8,7 +8,7 @@ import (
 	"os"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	plugin_exec "github.com/thegeeklab/wp-plugin-go/v6/exec"
+	plugin_exec "github.com/thegeeklab/wp-plugin-go/v7/exec"
 )
 
 var (
@@ -63,8 +63,13 @@ func (p *Plugin) FlagsFromContext() error {
 
 // Validate handles the settings validation of the plugin.
 func (p *Plugin) Validate() error {
+	environment, err := p.GetEnvironment()
+	if err != nil {
+		return fmt.Errorf("error while getting environment configuration: %w", err)
+	}
+
 	p.Settings.DataDir = ".terraform"
-	if value, ok := p.Environment.Lookup("TF_DATA_DIR"); ok {
+	if value, ok := environment.Lookup("TF_DATA_DIR"); ok {
 		p.Settings.DataDir = value
 	}
 
@@ -78,11 +83,21 @@ func (p *Plugin) Validate() error {
 
 // Execute provides the implementation of the plugin.
 func (p *Plugin) Execute() error {
+	network, err := p.GetNetwork()
+	if err != nil {
+		return fmt.Errorf("error while getting network configuration: %w", err)
+	}
+
+	environment, err := p.GetEnvironment()
+	if err != nil {
+		return fmt.Errorf("error while getting environment configuration: %w", err)
+	}
+
 	batchCmd := make([]*plugin_exec.Cmd, 0)
 	batchCmd = append(batchCmd, p.Settings.Tofu.Version())
 
 	if p.Settings.TofuVersion != "" {
-		err := installPackage(p.Network.Context, p.Network.Client, p.Settings.TofuVersion)
+		err := installPackage(network.Context, network.Client, p.Settings.TofuVersion)
 		if err != nil {
 			return err
 		}
@@ -123,7 +138,7 @@ func (p *Plugin) Execute() error {
 			cmd.Dir = p.Settings.RootDir
 		}
 
-		cmd.Env = append(cmd.Env, p.Environment.Value()...)
+		cmd.Env = append(cmd.Env, environment.Value()...)
 
 		if err := cmd.Run(); err != nil {
 			return err
