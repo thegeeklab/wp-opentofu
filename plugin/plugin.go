@@ -2,13 +2,14 @@ package plugin
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/thegeeklab/wp-opentofu/tofu"
-	plugin_base "github.com/thegeeklab/wp-plugin-go/v6/plugin"
+	plugin_base "github.com/thegeeklab/wp-plugin-go/v7/plugin"
 	"github.com/urfave/cli/v3"
 )
 
-//go:generate go run ../internal/docs/main.go -output=../docs/data/data-raw.yaml
+//go:generate go run ../hack/docs-gen/main.go -output=../docs/data/data.yaml
 
 // Plugin implements provide the plugin.
 type Plugin struct {
@@ -31,9 +32,14 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 	}
 
 	options := plugin_base.Options{
-		Name:                "wp-opentofu",
-		Description:         "Manage infrastructure with OpenTofu",
-		Flags:               Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		Name:        "wp-opentofu",
+		Description: "Manage infrastructure with OpenTofu",
+		Flags: slices.Concat(
+			plugin_base.LoggingFlags(plugin_base.FlagsPluginCategory),
+			plugin_base.NetworkFlags(plugin_base.FlagsPluginCategory),
+			plugin_base.EnvironmentFlags(plugin_base.FlagsPluginCategory),
+			Flags(p.Settings, plugin_base.FlagsPluginCategory),
+		),
 		Execute:             p.run,
 		HideWoodpeckerFlags: true,
 	}
@@ -58,6 +64,7 @@ func New(e plugin_base.ExecuteFunc, build ...string) *Plugin {
 // Flags returns a slice of CLI flags for the plugin.
 func Flags(settings *Settings, category string) []cli.Flag {
 	return []cli.Flag{
+		// Tofu actions to execute.
 		&cli.StringSliceFlag{
 			Name:        "action",
 			Usage:       "tofu actions to execute",
@@ -66,18 +73,23 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Action,
 			Category:    category,
 		},
+		// Tofu init command options, see the OpenTofu
+		// [init command](https://opentofu.org/docs/cli/commands/init/) documentation.
 		&cli.StringFlag{
 			Name:     "init-option",
 			Usage:    "tofu init command options, see https://opentofu.org/docs/cli/commands/init/",
 			Sources:  cli.EnvVars("PLUGIN_INIT_OPTION"),
 			Category: category,
 		},
+		// Options for the fmt command, see the OpenTofu
+		// [fmt command](https://opentofu.org/docs/cli/commands/fmt/) documentation.
 		&cli.StringFlag{
 			Name:     "fmt-option",
 			Usage:    "options for the fmt command, see https://opentofu.org/docs/cli/commands/fmt/",
 			Sources:  cli.EnvVars("PLUGIN_FMT_OPTION"),
 			Category: category,
 		},
+		// Number of concurrent operations.
 		&cli.Int64Flag{
 			Name:        "parallelism",
 			Usage:       "number of concurrent operations",
@@ -85,6 +97,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Tofu.Parallelism,
 			Category:    category,
 		},
+		// Root directory where the tofu files live.
 		&cli.StringFlag{
 			Name:        "root-dir",
 			Usage:       "root directory where the tofu files live",
@@ -92,6 +105,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.RootDir,
 			Category:    category,
 		},
+		// Suppress tofu command output for `plan`, `apply` and `destroy` action.
 		&cli.BoolFlag{
 			Name:        "no-log",
 			Usage:       "suppress tofu command output for `plan`, `apply` and `destroy` action",
@@ -99,6 +113,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Tofu.NoLog,
 			Category:    category,
 		},
+		// Targets to run `plan` or `apply` action on.
 		&cli.StringSliceFlag{
 			Name:        "targets",
 			Usage:       "targets to run `plan` or `apply` action on",
@@ -106,6 +121,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.Tofu.Targets,
 			Category:    category,
 		},
+		// Tofu version to use.
 		&cli.StringFlag{
 			Name:        "tofu-version",
 			Usage:       "tofu version to use",
@@ -113,6 +129,7 @@ func Flags(settings *Settings, category string) []cli.Flag {
 			Destination: &settings.TofuVersion,
 			Category:    category,
 		},
+		// Enables refreshing of the state before `plan` and `apply` commands.
 		&cli.BoolFlag{
 			Name:        "refresh",
 			Usage:       "enables refreshing of the state before `plan` and `apply` commands",
