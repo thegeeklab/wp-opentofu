@@ -12,11 +12,14 @@ import (
 )
 
 var (
-	ErrTaintedPath        = errors.New("filepath is tainted")
-	ErrMaxSizeSizeLimit   = errors.New("max size limit of decoded data exceeded")
-	ErrActionUnknown      = errors.New("action not found")
+	// ErrTaintedPath is returned when a zip entry path escapes the extraction destination.
+	ErrTaintedPath = errors.New("filepath is tainted")
+	// ErrActionUnknown is returned when an unsupported tofu action is configured.
+	ErrActionUnknown = errors.New("action not found")
+	// ErrInvalidTofuVersion is returned when the requested version is not a valid semantic version.
 	ErrInvalidTofuVersion = errors.New("invalid version string")
-	ErrHTTPError          = errors.New("http error")
+	// ErrHTTPError is returned when a download responds with a status code of 400 or higher.
+	ErrHTTPError = errors.New("http error")
 )
 
 const (
